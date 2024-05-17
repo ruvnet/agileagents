@@ -126,8 +126,8 @@ project_root/
 1. Clone the repository:
 
 ```sh
-git clone https://github.com/your-repo/agile-agents.git
-cd agile-agents
+git clone https://github.com/ruvnet/agileagents
+cd agileagents
 ```
 
 2. Run the setup script to install dependencies and set up the project structure:
