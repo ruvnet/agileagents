@@ -93,14 +93,7 @@ git clone https://github.com/ruvnet/agileagents
 cd agileagents
 ```
 
-2. Run the setup script to install dependencies and set up the project structure:
-
-```sh
-chmod +x setup.sh
-./setup.sh
-```
-
-3. Set up your environment variables:
+2. Set up your environment variables:
 
 ```sh
 export AWS_ACCESS_KEY_ID=your_aws_access_key_id
