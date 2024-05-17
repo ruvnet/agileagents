@@ -5,6 +5,16 @@ from fastapi.staticfiles import StaticFiles  # Import StaticFiles to serve stati
 from routers import costs_router, iam_router, management_router, misc_router, bedrock_router
 from deployment.aws.deploy import deploy_router
 
+#          ____ ___       
+#  _______|    |   ___  __
+#  \_  __ |    |   \  \/ /
+#   |  | \|    |  / \   / 
+#   |__|  |______/   \_/  
+#                         
+#     Agile Agents API
+#     Version: 0.1.0
+#     Created by rUv
+
 # Create an instance of the FastAPI application with custom metadata
 app = FastAPI(
     title="Agile Agents",  # Set the title for the Swagger UI
