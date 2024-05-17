@@ -1,0 +1,18 @@
+{
+    "name": "Agile Agents (A2)",
+    "context": "..",
+    "dockerFile": "Dockerfile",
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+    },
+    "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker"
+    ],
+    "forwardPorts": [8000],
+    "postCreateCommand": "pip install -r requirements.txt",
+    "remoteUser": "vscode",
+    "workspaceFolder": "/workspace",
+    "runArgs": ["-v", "${localWorkspaceFolder}:/workspace"]
+}
