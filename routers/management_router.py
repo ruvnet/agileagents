@@ -6,8 +6,14 @@ from botocore.exceptions import ClientError
 import json
 
 from models.base_models import InvokeConfig
+from services.aws_services import (
+    list_s3_buckets,
+    upload_file_to_s3,
+    create_ec2_instance,
+    describe_ec2_instances
+)
 
-router = APIRouter()
+management_router = APIRouter()
 
 class FunctionConfig(BaseModel):
     repository_name: str
@@ -27,7 +33,7 @@ class UpdateFunctionConfig(BaseModel):
     environment_variables: Optional[dict] = None
     region: Optional[str] = None
 
-@router.post("/deploy-multiple-functions")
+@management_router.post("/deploy-multiple-functions")
 async def deploy_multiple_functions(config: FunctionConfig):
     try:
         # Initialize AWS clients
@@ -112,7 +118,7 @@ async def deploy_multiple_functions(config: FunctionConfig):
     except ClientError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/invoke-lambda")
+@management_router.get("/invoke-lambda")
 async def invoke_lambda(function_name: str, region: Optional[str] = None):
     try:
         # Initialize boto3 Lambda client
@@ -133,7 +139,7 @@ async def invoke_lambda(function_name: str, region: Optional[str] = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/invoke-multiple-functions")
+@management_router.post("/invoke-multiple-functions")
 async def invoke_multiple_functions(config: InvokeConfig):
     try:
         # Initialize AWS clients
@@ -214,8 +220,8 @@ async def invoke_multiple_functions(config: InvokeConfig):
         return {"message": f"Invoked {config.number_of_functions} functions successfully", "responses": responses}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-@router.get("/list-lambda-functions")
+
+@management_router.get("/list-lambda-functions")
 async def list_lambda_functions(region: Optional[str] = None):
     try:
         if region:
@@ -236,8 +242,7 @@ async def list_lambda_functions(region: Optional[str] = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-@router.delete("/delete-lambda-function")
+@management_router.delete("/delete-lambda-function")
 async def delete_lambda_function(function_name: str):
     try:
         # Initialize boto3 Lambda client
@@ -251,7 +256,7 @@ async def delete_lambda_function(function_name: str):
     except ClientError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/list-ecr-repositories")
+@management_router.get("/list-ecr-repositories")
 async def list_ecr_repositories():
     try:
         # Initialize boto3 ECR client
@@ -266,7 +271,7 @@ async def list_ecr_repositories():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.delete("/delete-ecr-repository")
+@management_router.delete("/delete-ecr-repository")
 async def delete_ecr_repository(repository_name: str):
     try:
         # Initialize boto3 ECR client
@@ -278,4 +283,76 @@ async def delete_ecr_repository(repository_name: str):
 
         return {"message": f"ECR repository {repository_name} deleted successfully."}
     except ClientError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@management_router.get("/s3-buckets", tags=["S3"])
+async def get_s3_buckets():
+    """
+    List all S3 buckets in the AWS account.
+    """
+    try:
+        buckets = list_s3_buckets()
+        return {"buckets": buckets}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@management_router.post("/upload-to-s3", tags=["S3"])
+async def upload_to_s3(file_name: str, bucket_name: str, object_name: Optional[str] = None):
+    """
+    Upload a file to an S3 bucket.
+
+    Args:
+        file_name (str): The file to upload.
+        bucket_name (str): The name of the bucket to upload to.
+        object_name (str, optional): The S3 object name. If not specified, file_name is used.
+
+    Returns:
+        dict: Upload status.
+    """
+    try:
+        success = upload_file_to_s3(file_name, bucket_name, object_name)
+        if success:
+            return {"message": "File uploaded successfully"}
+        else:
+            raise HTTPException(status_code=500, detail="File upload failed")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@management_router.post("/create-ec2-instance", tags=["EC2"])
+async def create_ec2_instance_endpoint(image_id: str, instance_type: str, key_name: str, security_group: str, region_name: Optional[str] = None):
+    """
+    Create a new EC2 instance.
+
+    Args:
+        image_id (str): The ID of the AMI.
+        instance_type (str): The instance type (e.g., 't2.micro').
+        key_name (str): The name of the key pair.
+        security_group (str): The name of the security group.
+        region_name (str, optional): The AWS region. If not provided, uses the default region.
+
+    Returns:
+        dict: Information about the created instance.
+    """
+    try:
+        instance = create_ec2_instance(image_id, instance_type, key_name, security_group, region_name)
+        return {"instance": instance}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@management_router.get("/ec2-instances", tags=["EC2"])
+async def get_ec2_instances(instance_ids: Optional[List[str]] = None, region_name: Optional[str] = None):
+    """
+    Describe EC2 instances.
+
+    Args:
+        instance_ids (List[str], optional): A list of instance IDs to describe. If not provided, describes all instances.
+        region_name (str, optional): The AWS region. If not provided, uses the default region.
+
+    Returns:
+        dict: Information about the instances.
+    """
+    try:
+        instances = describe_ec2_instances(instance_ids, region_name)
+        return {"instances": instances}
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

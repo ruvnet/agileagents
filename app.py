@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.staticfiles import StaticFiles  # Import StaticFiles to serve static files
-from routers import costs_router, iam_router, management_router, misc_router, bedrock_router
-from deployment.aws.deploy import deploy_router
+from routers.costs_router import router as costs_router  # Correctly import costs_router
+from routers.iam_router import router as iam_router  # Correctly import iam_router
+from routers.misc_router import router as misc_router  # Correctly import misc_router
+from routers.bedrock_router import router as bedrock_router  # Correctly import bedrock_router
+from routers.management_router import management_router  # Correctly import management_router
+from deployment.aws.deploy import deploy_router  # Correctly import deploy_router
 
 #          ____ ___       
 #  _______|    |   ___  __

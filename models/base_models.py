@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 class DeployRequest(BaseModel):
     repository_name: str
@@ -36,14 +36,23 @@ class FunctionConfig(BaseModel):
     vpc_id: str
     subnet_ids: List[str]
     security_group_ids: List[str]
-    region: Optional[str] = None 
+    region: Optional[str] = None
     log_retention_days: Optional[int] = 7
 
 class InvokeConfig(BaseModel):
     function_name_prefix: str
     number_of_functions: int
-    payload: dict
+    payload: Dict
     region: Optional[str] = None
+
+class AccessKeyRequest(BaseModel):
+    user_name: str
+
+class BedrockModelRequest(BaseModel):
+    prompt: str
+    max_tokens_to_sample: Optional[int] = 300
+    temperature: Optional[float] = 0.1
+    top_p: Optional[float] = 0.9
 
 class TimePeriod(BaseModel):
     Start: str
@@ -57,25 +66,19 @@ class UpdateFunctionConfig(BaseModel):
     function_name: str
     memory_size: Optional[int] = None
     timeout: Optional[int] = None
-    environment_variables: Optional[dict] = None
+    environment_variables: Optional[Dict] = None
     region: Optional[str] = None
-
-class BedrockModelRequest(BaseModel):
-    prompt: str
-    max_tokens_to_sample: Optional[int] = 300
-    temperature: Optional[float] = 0.1
-    top_p: Optional[float] = 0.9
 
 class IAMUserRequest(BaseModel):
     user_name: str
 
 class IAMRoleRequest(BaseModel):
     role_name: str
-    assume_role_policy_document: dict
+    assume_role_policy_document: Dict
 
 class IAMPolicyRequest(BaseModel):
     policy_name: str
-    policy_document: dict
+    policy_document: Dict
 
 class AssumeRoleRequest(BaseModel):
     role_arn: str
