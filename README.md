@@ -74,52 +74,6 @@ Access a library of pre-built agent-centric applications designed to accelerate 
 
 By leveraging both public and private repositories, Agile Agents (A2) empowers teams to rapidly develop, deploy, and scale intelligent agents in a secure and collaborative manner.
 
-## Project Structure
-
-```
-project_root/
-├── deployment/
-│   ├── aws/
-│   │   ├── deploy.py
-│   │   └── requirements.txt
-│   │   └── samples/
-│   │       └── deploy_sample.json
-│   ├── azure/
-│   │   ├── deploy.py
-│   │   └── requirements.txt
-│   │   └── samples/
-│   │       └── deploy_sample.json
-│   ├── gcp/
-│   │   ├── deploy.py
-│   │   └── requirements.txt
-│   │   └── samples/
-│   │       └── deploy_sample.json
-├── main.py
-├── routers/
-│   ├── costs_router.py
-│   ├── iam_router.py
-│   ├── management_router.py
-│   ├── misc_router.py
-│   └── bedrock_router.py
-├── models/
-│   ├── base_models.py
-│   └── specific_models.py
-├── services/
-│   ├── aws_services.py
-│   ├── azure_services.py
-│   └── gcp_services.py
-├── utils/
-│   ├── aws_utils.py
-│   ├── azure_utils.py
-│   └── gcp_utils.py
-├── Dockerfile
-├── .gitignore
-├── requirements.txt
-├── packages.txt
-├── readme.md
-└── setup.sh
-```
-
 ## Setup
 
 ### Prerequisites
@@ -290,3 +244,49 @@ Contributions are welcome! Please submit a pull request or open an issue to disc
 ### License
 
 This project is licensed under the MIT License.
+
+## Project Structure
+
+```
+project_root/
+├── deployment/
+│   ├── aws/
+│   │   ├── deploy.py
+│   │   └── requirements.txt
+│   │   └── samples/
+│   │       └── deploy_sample.json
+│   ├── azure/
+│   │   ├── deploy.py
+│   │   └── requirements.txt
+│   │   └── samples/
+│   │       └── deploy_sample.json
+│   ├── gcp/
+│   │   ├── deploy.py
+│   │   └── requirements.txt
+│   │   └── samples/
+│   │       └── deploy_sample.json
+├── main.py
+├── routers/
+│   ├── costs_router.py
+│   ├── iam_router.py
+│   ├── management_router.py
+│   ├── misc_router.py
+│   └── bedrock_router.py
+├── models/
+│   ├── base_models.py
+│   └── specific_models.py
+├── services/
+│   ├── aws_services.py
+│   ├── azure_services.py
+│   └── gcp_services.py
+├── utils/
+│   ├── aws_utils.py
+│   ├── azure_utils.py
+│   └── gcp_utils.py
+├── Dockerfile
+├── .gitignore
+├── requirements.txt
+├── packages.txt
+├── readme.md
+└── setup.sh
+```
