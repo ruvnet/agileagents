@@ -2,6 +2,37 @@
 
 Agile Agents (A2) is an open-source framework for the creation and deployment of serverless intelligent agents using public and private container repositories. The framework supports deployment to AWS, Azure, and GCP, with optional configurations for Azure and GCP.
 
+### Key Features
+
+- **Automated Deployment**: Streamline the deployment of Python applications to AWS Lambda with minimal configuration. Agile Agents automates the creation of virtual environments, dependency installation, Docker image building, and pushing to AWS Elastic Container Registry (ECR).
+
+- **Multi-Function Deployment**: Deploy multiple Lambda functions simultaneously, facilitating large-scale applications or microservices architectures, and enabling parallel development and deployment workflows.
+
+- **Advanced Deployment Options**: Customize your deployments with advanced Docker build options, including the ability to specify base images, build commands, and more, supporting flexibility and adaptability in your CI/CD pipeline.
+
+- **Flexible Configuration**: Support for VPC configurations, security group settings, and subnet specifications ensures secure and optimized network configurations for your Lambda functions, aligning with best practices for Agile infrastructure.
+
+- **Monitoring and Logging**: Integrated with AWS CloudWatch for capturing logs and metrics, Agile Agents enables you to monitor the performance and health of your Lambda functions, promoting a culture of continuous feedback and improvement.
+
+- **Cost Management**: Utilize AWS Cost Explorer and Budget APIs to track and manage your AWS costs effectively, helping your team stay within budget constraints and make informed decisions.
+
+- **Error Handling and Alerts**: Incorporate AWS SNS or SQS for error handling and alerting, ensuring you are promptly notified of any issues, facilitating quick responses and maintaining high service quality.
+
+- **Permissions and Security**: Easily manage IAM policies and roles for your Lambda functions, ensuring appropriate access control and security, crucial for maintaining compliance and protecting sensitive data.
+
+- **Regional Deployments**: Deploy functions across multiple AWS regions, providing flexibility and resilience for your applications, and supporting global Agile teams.
+
+- **User-Friendly API**: A comprehensive set of API endpoints allows for easy integration and automation of deployment processes, supporting Agile practices like continuous integration and continuous deployment (CI/CD).
+
+### Use Cases
+
+- **Microservices**: Deploy and manage a swarm of microservices, each running as an independent Lambda function, supporting modular and iterative development.
+
+- **Batch Processing**: Execute large-scale batch processing tasks by deploying multiple Lambda functions that process data in parallel, enhancing efficiency and scalability.
+
+- **Event-Driven Architectures**: Build event-driven systems that respond to various triggers and events, scaling automatically based on demand, promoting responsiveness and flexibility.
+
+- **Cost Optimization**: Track and manage AWS costs, ensuring efficient usage of resources and budget adherence, enabling Agile teams to deliver value while controlling expenses.
 ## Project Structure
 
 ```
