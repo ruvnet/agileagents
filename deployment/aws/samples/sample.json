@@ -1,9 +1,9 @@
 {
-    "repository_name": "example-repo",
+    "repository_name": "my-repository",
     "image_tag": "latest",
-    "python_script": "print('Hello, world!')",
-    "requirements": "fastapi\nboto3",
-    "function_name": "example-function",
+    "python_script": "def lambda_handler(event, context):\n    return {'statusCode': 200, 'body': 'Hello World'}",
+    "requirements": "requests\nnumpy",
+    "function_name": "my-lambda-function",
     "region": "us-west-2",
     "vpc_id": "vpc-12345678",
     "subnet_ids": ["subnet-12345678", "subnet-87654321"],
