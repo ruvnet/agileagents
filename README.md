@@ -105,10 +105,20 @@ chmod +x setup.sh
 ```sh
 export AWS_ACCESS_KEY_ID=your_aws_access_key_id
 export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
-export AZURE_SUBSCRIPTION_ID=your_azure_subscription_id
-export GOOGLE_CLOUD_PROJECT=your_gcp_project_id
+export AWS_DEFAULT_REGION=your_aws_default_region
+
 export ENABLE_AZURE=true  # Set to true to enable Azure deployments
 export ENABLE_GCP=true    # Set to true to enable GCP deployments
+
+export AZURE_SUBSCRIPTION_ID=your_azure_subscription_id
+export AZURE_CLIENT_ID=your_azure_client_id
+export AZURE_CLIENT_SECRET=your_azure_client_secret
+export AZURE_TENANT_ID=your_azure_tenant_id
+export AZURE_DEFAULT_REGION=your_azure_default_region
+
+export GOOGLE_CLOUD_PROJECT=your_gcp_project_id
+export GOOGLE_APPLICATION_CREDENTIALS=path_to_your_gcp_service_account_json
+export GOOGLE_DEFAULT_REGION=your_gcp_default_region
 ```
 
 ### Running the Application
