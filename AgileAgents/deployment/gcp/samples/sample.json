@@ -1,0 +1,11 @@
+{
+    "repository_name": "example-repo",
+    "image_tag": "latest",
+    "python_script": "print('Hello, world!')",
+    "requirements": "fastapi\ngoogle-auth",
+    "function_name": "example-function",
+    "region": "us-central1",
+    "vpc_id": "vpc-12345678",
+    "subnet_ids": ["subnet-12345678", "subnet-87654321"],
+    "security_group_ids": ["sg-12345678", "sg-87654321"]
+}

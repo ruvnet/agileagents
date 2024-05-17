@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+boto3
+azure-identity
+azure-graphrbac
+azure-mgmt-authorization
+google-auth
+google-cloud-storage
+google-cloud-functions
+google-cloud-container
+google-cloud-iam
+google-cloud-pubsub
+google-cloud-monitoring
+google-cloud-billing
+google-cloud-logging

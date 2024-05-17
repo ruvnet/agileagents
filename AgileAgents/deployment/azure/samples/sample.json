@@ -1,0 +1,11 @@
+{
+    "repository_name": "example-repo",
+    "image_tag": "latest",
+    "python_script": "print('Hello, world!')",
+    "requirements": "fastapi\nazure-identity",
+    "function_name": "example-function",
+    "region": "westus",
+    "vnet_name": "vnet-12345678",
+    "subnet_name": "subnet-12345678",
+    "security_group_name": "sg-12345678"
+}
