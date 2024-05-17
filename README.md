@@ -5,7 +5,7 @@
 \_/\_(____)
 
 Agile Agents
-v.0.1 @ruvnet
+v.0.1 : ruv
 ```
 # Agile Agents (A2)
 
