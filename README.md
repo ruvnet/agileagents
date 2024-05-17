@@ -110,48 +110,54 @@ docker run -d -p 8000:8000 --name agile-agents agile-agents
 ### Endpoints
 
 The API includes several endpoints for managing deployments, costs, IAM, and Bedrock models.
+### Endpoints
+
+The API includes several endpoints for managing deployments, costs, IAM, and Bedrock models.
 
 #### Costs Router
 
-- **GET /costs/get-cost-and-usage**
-- **POST /costs/describe-budget**
-- **GET /costs/describe-report-definitions**
-- **POST /costs/get-products**
-- **POST /costs/get-savings-plans-coverage**
+- **POST /costs/get-cost-and-usage** - Get Cost And Usage
+- **POST /costs/describe-budget** - Describe Budget
+- **GET /costs/describe-report-definitions** - Describe Report Definitions
+- **POST /costs/get-products** - Get Products
 
 #### IAM Router
 
-- **POST /iam/create-user**
-- **GET /iam/list-users**
-- **POST /iam/create-role**
-- **POST /iam/attach-policy-to-role**
-- **POST /iam/create-policy**
-- **POST /iam/assume-role**
-- **POST /iam/create-access-key**
+- **POST /iam/create-user** - Create User
+- **GET /iam/list-users** - List Users
+- **POST /iam/create-role** - Create Role
+- **POST /iam/attach-policy-to-role** - Attach Policy To Role
+- **POST /iam/create-policy** - Create Policy
+- **POST /iam/assume-role** - Assume Role
+- **POST /iam/create-access-key** - Create Access Key
 
 #### Management Router
 
-- **POST /management/deploy**
-- **POST /management/advanced-deploy**
-- **POST /management/deploy-multiple-functions**
-- **GET /management/invoke-lambda**
-- **POST /management/invoke-multiple-functions**
-- **GET /management/list-lambda-functions**
-- **DELETE /management/delete-lambda-function**
-- **GET /management/list-ecr-repositories**
-- **DELETE /management/delete-ecr-repository**
-- **POST /management/set-vpc-config**
-- **PUT /management/edit-vpc-config**
-- **GET /management/get-vpc-config**
+- **POST /management/deploy-multiple-functions** - Deploy Multiple Functions
+- **GET /management/invoke-lambda** - Invoke Lambda
+- **POST /management/invoke-multiple-functions** - Invoke Multiple Functions
+- **GET /management/list-lambda-functions** - List Lambda Functions
+- **DELETE /management/delete-lambda-function** - Delete Lambda Function
+- **GET /management/list-ecr-repositories** - List ECR Repositories
+- **DELETE /management/delete-ecr-repository** - Delete ECR Repository
+- **GET /management/s3-buckets** - Get S3 Buckets
+- **POST /management/upload-to-s3** - Upload To S3
+- **POST /management/create-ec2-instance** - Create EC2 Instance Endpoint
+- **GET /management/ec2-instances** - Get EC2 Instances
 
 #### Misc Router
 
-- **GET /misc/regions**
+- **GET /misc/regions** - List Regions
 
 #### Bedrock Router
 
-- **GET /bedrock/list-foundation-models**
-- **POST /bedrock/invoke-model**
+- **GET /bedrock/list-foundation-models** - List Foundation Models
+- **POST /bedrock/invoke-model** - Invoke Model
+
+#### Deployment Router
+
+- **POST /deployment/deploy** - Deploy
+- **POST /deployment/advanced-deploy** - Advanced Deploy
 
 ### Sample JSON for Endpoints
 
