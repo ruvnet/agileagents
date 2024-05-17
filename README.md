@@ -1,3 +1,12 @@
+```
+  __  ____ 
+ / _\(___ \
+/    \/ __/
+\_/\_(____)
+
+Agile Agents
+v.0.1 @ruvnet
+```
 # Agile Agents (A2)
 
 Agile Agents (A2) is an open-source framework for the creation and deployment of serverless intelligent agents using public and private container repositories. The framework supports deployment to AWS, Azure, and GCP, with optional configurations for Azure and GCP.
