@@ -4,6 +4,7 @@ from typing import Optional, List
 import boto3
 from botocore.exceptions import ClientError
 import json
+import os
 
 from models.base_models import InvokeConfig
 from services.aws_services import (
@@ -142,79 +143,29 @@ async def invoke_lambda(function_name: str, region: Optional[str] = None):
 @management_router.post("/invoke-multiple-functions")
 async def invoke_multiple_functions(config: InvokeConfig):
     try:
-        # Initialize AWS clients
+        # Initialize AWS Lambda client
         region = config.region or os.getenv("AWS_DEFAULT_REGION", "us-west-2")
         lambda_client = boto3.client('lambda', region_name=region)
-        logs_client = boto3.client('logs', region_name=region)
-        cloudwatch_client = boto3.client('cloudwatch', region_name=region)
-        sns_client = boto3.client('sns', region_name=region)
-        sns_topic_arn = os.getenv("SNS_TOPIC_ARN")
 
         responses = []
 
-        for i in range(config.number_of_functions):
-            function_name = f"{config.function_name_prefix}-{i}"
+        for _ in range(config.number_of_functions):
+            function_name = config.function_name_prefix
             try:
                 response = lambda_client.invoke(
                     FunctionName=function_name,
                     InvocationType='RequestResponse',
                     Payload=json.dumps(config.payload)
                 )
-                
+
                 # Parse the response
                 response_payload = response['Payload'].read().decode('utf-8')
                 response_data = json.loads(response_payload)
                 responses.append(response_data)
 
-                # Log the invocation to CloudWatch
-                log_group_name = f"/aws/lambda/{function_name}"
-                log_stream_name = f"{function_name}-invocation"
-                logs_client.create_log_stream(
-                    logGroupName=log_group_name,
-                    logStreamName=log_stream_name
-                )
-                logs_client.put_log_events(
-                    logGroupName=log_group_name,
-                    logStreamName=log_stream_name,
-                    logEvents=[
-                        {
-                            'timestamp': int(time.time() * 1000),
-                            'message': json.dumps(response_data)
-                        }
-                    ]
-                )
-
-                # Create custom CloudWatch metric
-                cloudwatch_client.put_metric_data(
-                    Namespace='LambdaInvocations',
-                    MetricData=[
-                        {
-                            'MetricName': 'InvocationCount',
-                            'Dimensions': [
-                                {
-                                    'Name': 'FunctionName',
-                                    'Value': function_name
-                                },
-                            ],
-                            'Unit': 'Count',
-                            'Value': 1
-                        }
-                    ]
-                )
-
             except lambda_client.exceptions.ResourceNotFoundException:
-                sns_client.publish(
-                    TopicArn=sns_topic_arn,
-                    Message=f"Function {function_name} not found during invocation.",
-                    Subject="Lambda Function Invocation Error"
-                )
                 raise HTTPException(status_code=500, detail=f"Function {function_name} not found.")
             except Exception as e:
-                sns_client.publish(
-                    TopicArn=sns_topic_arn,
-                    Message=str(e),
-                    Subject="Lambda Function Invocation Error"
-                )
                 raise HTTPException(status_code=500, detail=str(e))
 
         return {"message": f"Invoked {config.number_of_functions} functions successfully", "responses": responses}

@@ -14,3 +14,4 @@ google-cloud-pubsub
 google-cloud-monitoring
 google-cloud-billing
 google-cloud-logging
+gradio
