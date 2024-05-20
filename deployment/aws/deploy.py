@@ -154,7 +154,6 @@ async def deploy(request: DeployRequest):
 
 
 # Advanced deployment endpoint
-# Advanced deployment endpoint
 @deploy_router.post("/advanced-deploy")
 async def advanced_deploy(request: AdvancedDeployRequest, files: List[UploadFile] = File(...)):
     try:
