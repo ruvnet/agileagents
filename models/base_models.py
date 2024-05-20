@@ -1,12 +1,15 @@
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 
+
 class DeployRequest(BaseModel):
     repository_name: str
     image_tag: str
     python_script: str
     requirements: str
     function_name: str
+    memory_size: Optional[int] = 128
+    storage_size: Optional[int] = 512
     region: Optional[str] = None
     vpc_id: Optional[str] = None
     subnet_ids: Optional[List[str]] = None
@@ -22,6 +25,7 @@ class AdvancedDeployRequest(BaseModel):
     vpc_id: Optional[str] = None
     subnet_ids: Optional[List[str]] = None
     security_group_ids: Optional[List[str]] = None
+
 
 class VpcConfig(BaseModel):
     vpc_id: str

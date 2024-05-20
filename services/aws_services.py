@@ -1,6 +1,8 @@
 import boto3
 import json
+import subprocess
 from botocore.exceptions import ClientError
+import base64
 
 # Function to initialize an AWS client
 def get_aws_client(service_name, region_name=None):
@@ -73,6 +75,7 @@ def create_ecr_repository(repository_name, region_name=None):
     return response
 
 # Function to push a Docker image to ECR
+
 def push_docker_image_to_ecr(repository_name, image_tag, region_name=None):
     """
     Push a Docker image to an ECR repository.
@@ -90,8 +93,13 @@ def push_docker_image_to_ecr(repository_name, image_tag, region_name=None):
     ecr_uri = f"{account_id}.dkr.ecr.{region_name}.amazonaws.com"
     
     # Get ECR login token and authenticate Docker
-    login_password = ecr_client.get_authorization_token()['authorizationData'][0]['authorizationToken']
-    subprocess.run(["docker", "login", "-u", "AWS", "-p", login_password, ecr_uri], check=True)
+    auth_token = ecr_client.get_authorization_token()['authorizationData'][0]['authorizationToken']
+    username, password = base64.b64decode(auth_token).decode().split(':')
+    
+    login_command = f"docker login -u {username} -p {password} {ecr_uri}"
+    login_result = subprocess.run(login_command, shell=True, capture_output=True, text=True)
+    if login_result.returncode != 0:
+        raise Exception(f"Docker login failed: {login_result.stderr}")
     
     image_uri = f"{ecr_uri}/{repository_name}:{image_tag}"
     subprocess.run(["docker", "tag", f"{repository_name}:{image_tag}", image_uri], check=True)
