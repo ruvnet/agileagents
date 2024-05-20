@@ -1,18 +1,20 @@
 {
-    "name": "Agile Agents (A2)",
-    "context": "..",
-    "dockerFile": "Dockerfile",
-    "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash"
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "hostRequirements": {
+    "cpus": 4
+  },
+  "waitFor": "onCreateCommand",
+  "updateContentCommand": "python3 -m pip install -r requirements.txt",
+  "postCreateCommand": "chmod +x ./scripts/install_aws.sh && ./scripts/install_aws.sh",
+  "customizations": {
+    "codespaces": {
+      "openFiles": []
     },
-    "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "ms-azuretools.vscode-docker"
-    ],
-    "forwardPorts": [8000],
-    "postCreateCommand": "pip install -r requirements.txt",
-    "remoteUser": "vscode",
-    "workspaceFolder": "/workspace",
-    "runArgs": ["-v", "${localWorkspaceFolder}:/workspace"]
+    "vscode": {
+      "extensions": [
+        "ms-toolsai.jupyter",
+        "ms-python.python"
+      ]
+    }
+  }
 }
