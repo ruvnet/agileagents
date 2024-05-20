@@ -154,17 +154,17 @@ async def deploy(request: DeployRequest):
 
 
 # Advanced deployment endpoint
+# Advanced deployment endpoint
 @deploy_router.post("/advanced-deploy")
 async def advanced_deploy(request: AdvancedDeployRequest, files: List[UploadFile] = File(...)):
     try:
         # Ensure Docker is running
-        docker_running = subprocess.run(["docker", "info"], capture_output=True, text=True)
-        if docker_running.returncode != 0:
-            raise HTTPException(status_code=500, detail="Docker daemon is not running. Please start Docker daemon.")
-
+        docker_running = await run_subprocess("docker info")
+        
         # Ensure AWS CLI is installed
-        aws_cli_installed = subprocess.run(["aws", "--version"], capture_output=True, text=True)
-        if aws_cli_installed.returncode != 0:
+        try:
+            await run_subprocess("aws --version")
+        except subprocess.CalledProcessError:
             await install_aws_cli()
 
         # Save uploaded files
@@ -187,9 +187,7 @@ async def advanced_deploy(request: AdvancedDeployRequest, files: List[UploadFile
 
         # Build the Docker image
         image_name = f"{request.repository_name}:{request.image_tag}"
-        build_result = subprocess.run(["docker", "build", "-t", image_name, "."], capture_output=True, text=True)
-        if build_result.returncode != 0:
-            raise HTTPException(status_code=500, detail=f"Docker build failed: {build_result.stderr}")
+        build_result = await run_subprocess(f"docker build -t {image_name} .")
 
         # Push the Docker image to ECR
         region = request.region or os.getenv("AWS_DEFAULT_REGION", "us-west-2")

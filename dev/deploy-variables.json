@@ -1,0 +1,13 @@
+{
+    "repository_name": "deploy-variable-1",
+    "image_tag": "latest",
+    "python_script": "def lambda_handler(event, context): input_value = event.get('input', 'default value'); return {\"statusCode\": 200, \"body\": f\"Received input: {input_value}\"}",
+    "requirements": "",
+    "function_name": "deploy-variable-1",
+    "memory_size": 128,
+    "storage_size": 512,
+    "vpc_id": "",
+    "subnet_ids": [],
+    "security_group_ids": []
+  }
+  

@@ -1,0 +1,9 @@
+{
+    "function_name_prefix": "deploy-variable-1",
+    "number_of_functions": 1,
+    "payload": {
+      "input": "Test Value- this works!"
+    },
+    "region": "us-east-1"
+  }
+  
