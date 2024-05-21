@@ -1,17 +1,12 @@
-from fastapi import Depends, HTTPException
+# utils/auth.py is a file that contains the authentication logic for the API. It includes functions to authenticate users, create access tokens, and get the current user from a token. This file is imported and used in the routers to handle authentication and authorization.
+
+from fastapi import Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from pydantic import BaseModel
 from typing import Optional
 import os
 from datetime import datetime, timedelta
-
-# Load environment variables
-SECRET_KEY = os.getenv("SECRET_KEY", "your_secret_key")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 class Token(BaseModel):
     access_token: str
@@ -27,9 +22,11 @@ class UserInDB(User):
     hashed_password: str
 
 def verify_password(plain_password, hashed_password):
+    # Implement your password hashing and verification logic here
     return plain_password == hashed_password  # This is just for demonstration
 
 def get_user(email: str):
+    # Replace this with your database call to get the user
     if email == "test@example.com":
         return UserInDB(**{
             "email": email,
