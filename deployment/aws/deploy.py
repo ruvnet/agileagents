@@ -122,6 +122,9 @@ async def deploy(request: DeployRequest):
                 EphemeralStorage={
                     'Size': request.storage_size
                 },
+                Environment={
+                    'Variables': request.environment_variables or {}
+                },
                 VpcConfig={
                     'SubnetIds': request.subnet_ids or [],
                     'SecurityGroupIds': request.security_group_ids or []
@@ -140,6 +143,9 @@ async def deploy(request: DeployRequest):
                     EphemeralStorage={
                         'Size': request.storage_size
                     },
+                    Environment={
+                        'Variables': request.environment_variables or {}
+                    },
                     VpcConfig={
                         'SubnetIds': request.subnet_ids or [],
                         'SecurityGroupIds': request.security_group_ids or []
@@ -151,7 +157,6 @@ async def deploy(request: DeployRequest):
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 # Advanced deployment endpoint
 @deploy_router.post("/advanced-deploy")

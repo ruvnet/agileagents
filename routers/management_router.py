@@ -1,3 +1,5 @@
+#management_router.py
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
@@ -119,17 +121,18 @@ async def deploy_multiple_functions(config: FunctionConfig):
     except ClientError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@management_router.get("/invoke-lambda")
-async def invoke_lambda(function_name: str, region: Optional[str] = None):
+@management_router.post("/invoke-lambda")
+async def invoke_lambda(config: InvokeConfig):
     try:
         # Initialize boto3 Lambda client
-        region = region or os.getenv("AWS_DEFAULT_REGION", "us-west-2")
+        region = config.region or os.getenv("AWS_DEFAULT_REGION", "us-west-2")
         lambda_client = boto3.client('lambda', region_name=region)
         
         # Invoke the Lambda function
         response = lambda_client.invoke(
-            FunctionName=function_name,
-            InvocationType='RequestResponse'
+            FunctionName=config.function_name,
+            InvocationType='RequestResponse',
+            Payload=json.dumps(config.payload)
         )
         
         # Parse the response

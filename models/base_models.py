@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+# base_models.py
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
-
 
 class DeployRequest(BaseModel):
     repository_name: str
@@ -14,6 +14,7 @@ class DeployRequest(BaseModel):
     vpc_id: Optional[str] = None
     subnet_ids: Optional[List[str]] = None
     security_group_ids: Optional[List[str]] = None
+    environment_variables: Optional[Dict[str, str]] = None 
 
 class AdvancedDeployRequest(BaseModel):
     repository_name: str
@@ -44,10 +45,26 @@ class FunctionConfig(BaseModel):
     log_retention_days: Optional[int] = 7
 
 class InvokeConfig(BaseModel):
-    function_name_prefix: str
-    number_of_functions: int
-    payload: Dict
+    function_name: str
+    payload: Dict[str, str] = Field(..., example={
+        "OPENAI_API_KEY": "your-openai-api-key",
+        "OTHER_ENV_VAR": "value",
+        "name": "World"
+    })
     region: Optional[str] = None
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "function_name": "string",
+                "payload": {
+                    "OPENAI_API_KEY": "your-openai-api-key",
+                    "OTHER_ENV_VAR": "value",
+                    "name": "World"
+                },
+                "region": "us-west-2"
+            }
+        }
 
 class AccessKeyRequest(BaseModel):
     user_name: str
