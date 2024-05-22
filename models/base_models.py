@@ -44,7 +44,7 @@ class FunctionConfig(BaseModel):
     region: Optional[str] = None
     log_retention_days: Optional[int] = 7
 
-class InvokeConfig(BaseModel):
+class SingleInvokeConfig(BaseModel):
     function_name: str
     payload: Dict[str, str] = Field(..., example={
         "OPENAI_API_KEY": "your-openai-api-key",
@@ -53,15 +53,36 @@ class InvokeConfig(BaseModel):
     })
     region: Optional[str] = None
 
+class MultipleInvokeConfig(BaseModel):
+    function_name_prefix: str
+    payload: Dict[str, str] = Field(..., example={
+        "OPENAI_API_KEY": "your-openai-api-key",
+        "OTHER_ENV_VAR": "value",
+        "name": "World"
+    })
+    number_of_functions: int = Field(..., example=2)
+    region: Optional[str] = None
+    
+class InvokeConfig(BaseModel):
+    function_name_prefix: str
+    payload: Dict[str, str] = Field(..., example={
+        "OPENAI_API_KEY": "your-openai-api-key",
+        "OTHER_ENV_VAR": "value",
+        "name": "World"
+    })
+    number_of_functions: int = Field(..., example=2)
+    region: Optional[str] = None
+
     class Config:
         json_schema_extra = {
             "example": {
-                "function_name": "string",
+                "function_name_prefix": "env-1",
                 "payload": {
                     "OPENAI_API_KEY": "your-openai-api-key",
                     "OTHER_ENV_VAR": "value",
                     "name": "World"
                 },
+                "number_of_functions": 2,
                 "region": "us-west-2"
             }
         }

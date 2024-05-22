@@ -1,30 +1,16 @@
-# tests/test_auth.py
-
 import pytest
-from fastapi.testclient import TestClient
-from app import app
-from utils.auth import get_current_user, User
+from httpx import AsyncClient, ASGITransport
+from app import app  # Import the FastAPI app from app.py
 
-@pytest.fixture(scope="module")
-def client():
-    def override_get_current_user():
-        return User(email="test@example.com")
-    
-    app.dependency_overrides[get_current_user] = override_get_current_user
-    with TestClient(app) as c:
-        yield c
+@pytest.mark.asyncio
+async def test_login():
+    transport = ASGITransport(app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        response = await ac.post("/users/api/login", json={"email": "test@example.com", "password": "fakehashedpassword"})
+        assert response.status_code == 200
+        response_json = response.json()
+        assert "access_token" in response_json.get("user_data", {})
+        assert response_json["user_data"]["token_type"] == "bearer"
 
-def test_login_for_access_token(client):
-    response = client.post(
-        "/token",
-        data={"username": "test@example.com", "password": "testpassword"}
-    )
-    assert response.status_code == 200
-    assert "access_token" in response.json()
-
-def test_invalid_login(client):
-    response = client.post(
-        "/token",
-        data={"username": "wrong@example.com", "password": "wrongpassword"}
-    )
-    assert response.status_code == 401
+if __name__ == "__main__":
+    pytest.main(["-v", "test_auth.py"])

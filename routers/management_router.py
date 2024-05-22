@@ -1,20 +1,19 @@
-#management_router.py
-
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, status
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict
 import boto3
 from botocore.exceptions import ClientError
 import json
 import os
 
-from models.base_models import InvokeConfig
+from models.base_models import SingleInvokeConfig, MultipleInvokeConfig
 from services.aws_services import (
     list_s3_buckets,
     upload_file_to_s3,
     create_ec2_instance,
     describe_ec2_instances
 )
+from utils.auth import get_current_user  # Ensure this is correctly imported
 
 management_router = APIRouter()
 
@@ -37,7 +36,7 @@ class UpdateFunctionConfig(BaseModel):
     region: Optional[str] = None
 
 @management_router.post("/deploy-multiple-functions")
-async def deploy_multiple_functions(config: FunctionConfig):
+async def deploy_multiple_functions(config: FunctionConfig, current_user: dict = Depends(get_current_user)):
     try:
         # Initialize AWS clients
         account_id = boto3.client('sts').get_caller_identity().get('Account')
@@ -122,7 +121,7 @@ async def deploy_multiple_functions(config: FunctionConfig):
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.post("/invoke-lambda")
-async def invoke_lambda(config: InvokeConfig):
+async def invoke_lambda(config: SingleInvokeConfig, current_user: dict = Depends(get_current_user)):
     try:
         # Initialize boto3 Lambda client
         region = config.region or os.getenv("AWS_DEFAULT_REGION", "us-west-2")
@@ -144,7 +143,7 @@ async def invoke_lambda(config: InvokeConfig):
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.post("/invoke-multiple-functions")
-async def invoke_multiple_functions(config: InvokeConfig):
+async def invoke_multiple_functions(config: MultipleInvokeConfig, current_user: dict = Depends(get_current_user)):
     try:
         # Initialize AWS Lambda client
         region = config.region or os.getenv("AWS_DEFAULT_REGION", "us-west-2")
@@ -153,7 +152,7 @@ async def invoke_multiple_functions(config: InvokeConfig):
         responses = []
 
         for _ in range(config.number_of_functions):
-            function_name = config.function_name_prefix
+            function_name = config.function_name_prefix  # Use the provided function name without appending
             try:
                 response = lambda_client.invoke(
                     FunctionName=function_name,
@@ -175,8 +174,9 @@ async def invoke_multiple_functions(config: InvokeConfig):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @management_router.get("/list-lambda-functions")
-async def list_lambda_functions(region: Optional[str] = None):
+async def list_lambda_functions(region: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     try:
         if region:
             lambda_client = boto3.client('lambda', region_name=region)
@@ -197,7 +197,7 @@ async def list_lambda_functions(region: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.delete("/delete-lambda-function")
-async def delete_lambda_function(function_name: str):
+async def delete_lambda_function(function_name: str, current_user: dict = Depends(get_current_user)):
     try:
         # Initialize boto3 Lambda client
         region = "us-west-2"  # Change to your desired region
@@ -211,7 +211,7 @@ async def delete_lambda_function(function_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.get("/list-ecr-repositories")
-async def list_ecr_repositories():
+async def list_ecr_repositories(current_user: dict = Depends(get_current_user)):
     try:
         # Initialize boto3 ECR client
         region = "us-west-2"  # Change to your desired region
@@ -226,7 +226,7 @@ async def list_ecr_repositories():
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.delete("/delete-ecr-repository")
-async def delete_ecr_repository(repository_name: str):
+async def delete_ecr_repository(repository_name: str, current_user: dict = Depends(get_current_user)):
     try:
         # Initialize boto3 ECR client
         region = "us-west-2"  # Change to your desired region
@@ -240,7 +240,7 @@ async def delete_ecr_repository(repository_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.get("/s3-buckets", tags=["S3"])
-async def get_s3_buckets():
+async def get_s3_buckets(current_user: dict = Depends(get_current_user)):
     """
     List all S3 buckets in the AWS account.
     """
@@ -251,7 +251,7 @@ async def get_s3_buckets():
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.post("/upload-to-s3", tags=["S3"])
-async def upload_to_s3(file_name: str, bucket_name: str, object_name: Optional[str] = None):
+async def upload_to_s3(file_name: str, bucket_name: str, object_name: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     """
     Upload a file to an S3 bucket.
 
@@ -273,7 +273,7 @@ async def upload_to_s3(file_name: str, bucket_name: str, object_name: Optional[s
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.post("/create-ec2-instance", tags=["EC2"])
-async def create_ec2_instance_endpoint(image_id: str, instance_type: str, key_name: str, security_group: str, region_name: Optional[str] = None):
+async def create_ec2_instance_endpoint(image_id: str, instance_type: str, key_name: str, security_group: str, region_name: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     """
     Create a new EC2 instance.
 
@@ -294,7 +294,7 @@ async def create_ec2_instance_endpoint(image_id: str, instance_type: str, key_na
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.get("/ec2-instances", tags=["EC2"])
-async def get_ec2_instances(instance_ids: Optional[List[str]] = None, region_name: Optional[str] = None):
+async def get_ec2_instances(instance_ids: Optional[List[str]] = None, region_name: Optional[str] = None, current_user: dict = Depends(get_current_user)):
     """
     Describe EC2 instances.
 
