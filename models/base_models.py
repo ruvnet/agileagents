@@ -2,20 +2,23 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict
 
+
 class DeployRequest(BaseModel):
-    repository_name: str
-    image_tag: str
     python_script: str
     requirements: str
+    dockerfile_base_image: str = "public.ecr.aws/lambda/python:3.9"
+    dockerfile_cmd: str = '["app.lambda_handler"]'
+    repository_name: str
+    image_tag: str
+    region: str
     function_name: str
-    memory_size: Optional[int] = 128
-    storage_size: Optional[int] = 512
-    region: Optional[str] = None
-    vpc_id: Optional[str] = None
-    subnet_ids: Optional[List[str]] = None
-    security_group_ids: Optional[List[str]] = None
-    environment_variables: Optional[Dict[str, str]] = None 
-
+    memory_size: int = 128
+    storage_size: int = 512
+    environment_variables: dict = None
+    vpc_id: str = None
+    subnet_ids: list = None
+    security_group_ids: list = None
+     
 class AdvancedDeployRequest(BaseModel):
     repository_name: str
     image_tag: str

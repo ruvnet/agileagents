@@ -9,3 +9,5 @@
     "subnet_ids": ["subnet-12345678", "subnet-87654321"],
     "security_group_ids": ["sg-12345678", "sg-87654321"]
 }
+
+

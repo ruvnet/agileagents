@@ -120,6 +120,20 @@ async def deploy_multiple_functions(config: FunctionConfig):
     except ClientError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from typing import Optional
+import boto3
+import json
+import os
+
+management_router = APIRouter()
+
+class SingleInvokeConfig(BaseModel):
+    function_name: str
+    payload: dict
+    region: Optional[str] = None
+
 @management_router.post("/invoke-lambda")
 async def invoke_lambda(config: SingleInvokeConfig):
     try:
@@ -131,16 +145,18 @@ async def invoke_lambda(config: SingleInvokeConfig):
         response = lambda_client.invoke(
             FunctionName=config.function_name,
             InvocationType='RequestResponse',
-            Payload=json.dumps(config.payload)
+            Payload=json.dumps(config.payload)  # Ensure the payload is a JSON string
         )
         
         # Parse the response
         response_payload = response['Payload'].read().decode('utf-8')
         response_data = json.loads(response_payload)
-
-        return response_data
+        
+        # Return the raw response for debugging
+        return {"raw_response": response_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @management_router.post("/invoke-multiple-functions")
 async def invoke_multiple_functions(config: MultipleInvokeConfig):
