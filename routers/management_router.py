@@ -36,7 +36,7 @@ class UpdateFunctionConfig(BaseModel):
     region: Optional[str] = None
 
 @management_router.post("/deploy-multiple-functions")
-async def deploy_multiple_functions(config: FunctionConfig, current_user: dict = Depends(get_current_user)):
+async def deploy_multiple_functions(config: FunctionConfig):
     try:
         # Initialize AWS clients
         account_id = boto3.client('sts').get_caller_identity().get('Account')
@@ -121,7 +121,7 @@ async def deploy_multiple_functions(config: FunctionConfig, current_user: dict =
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.post("/invoke-lambda")
-async def invoke_lambda(config: SingleInvokeConfig, current_user: dict = Depends(get_current_user)):
+async def invoke_lambda(config: SingleInvokeConfig):
     try:
         # Initialize boto3 Lambda client
         region = config.region or os.getenv("AWS_DEFAULT_REGION", "us-west-2")
@@ -143,7 +143,7 @@ async def invoke_lambda(config: SingleInvokeConfig, current_user: dict = Depends
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.post("/invoke-multiple-functions")
-async def invoke_multiple_functions(config: MultipleInvokeConfig, current_user: dict = Depends(get_current_user)):
+async def invoke_multiple_functions(config: MultipleInvokeConfig):
     try:
         # Initialize AWS Lambda client
         region = config.region or os.getenv("AWS_DEFAULT_REGION", "us-west-2")
@@ -176,7 +176,7 @@ async def invoke_multiple_functions(config: MultipleInvokeConfig, current_user: 
 
 
 @management_router.get("/list-lambda-functions")
-async def list_lambda_functions(region: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+async def list_lambda_functions(region: Optional[str] = None):
     try:
         if region:
             lambda_client = boto3.client('lambda', region_name=region)
@@ -197,7 +197,7 @@ async def list_lambda_functions(region: Optional[str] = None, current_user: dict
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.delete("/delete-lambda-function")
-async def delete_lambda_function(function_name: str, current_user: dict = Depends(get_current_user)):
+async def delete_lambda_function(function_name: str):
     try:
         # Initialize boto3 Lambda client
         region = "us-west-2"  # Change to your desired region
@@ -226,7 +226,7 @@ async def list_ecr_repositories(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.delete("/delete-ecr-repository")
-async def delete_ecr_repository(repository_name: str, current_user: dict = Depends(get_current_user)):
+async def delete_ecr_repository(repository_name: str):
     try:
         # Initialize boto3 ECR client
         region = "us-west-2"  # Change to your desired region
@@ -251,7 +251,7 @@ async def get_s3_buckets(current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.post("/upload-to-s3", tags=["S3"])
-async def upload_to_s3(file_name: str, bucket_name: str, object_name: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+async def upload_to_s3(file_name: str, bucket_name: str, object_name: Optional[str] = None):
     """
     Upload a file to an S3 bucket.
 
@@ -273,7 +273,7 @@ async def upload_to_s3(file_name: str, bucket_name: str, object_name: Optional[s
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.post("/create-ec2-instance", tags=["EC2"])
-async def create_ec2_instance_endpoint(image_id: str, instance_type: str, key_name: str, security_group: str, region_name: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+async def create_ec2_instance_endpoint(image_id: str, instance_type: str, key_name: str, security_group: str, region_name: Optional[str] = None):
     """
     Create a new EC2 instance.
 
@@ -294,7 +294,7 @@ async def create_ec2_instance_endpoint(image_id: str, instance_type: str, key_na
         raise HTTPException(status_code=500, detail=str(e))
 
 @management_router.get("/ec2-instances", tags=["EC2"])
-async def get_ec2_instances(instance_ids: Optional[List[str]] = None, region_name: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+async def get_ec2_instances(instance_ids: Optional[List[str]] = None, region_name: Optional[str] = None):
     """
     Describe EC2 instances.
 

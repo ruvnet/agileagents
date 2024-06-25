@@ -1,0 +1,8 @@
+{
+    "repository_name": "gradio-1",
+    "image_tag": "latest",
+    "python_script": "import gradio as gr\n\ndef greet(name):\n    return f'Hello {name}!'\n\niface = gr.Interface(fn=greet, inputs='text', outputs='text')\nshared_url = iface.launch(share=True)[0]\nwith open('/tmp/shared_url.txt', 'w') as f:\n    f.write(shared_url)",
+    "requirements": "gradio",
+    "function_name": "gradio-url",
+    "region": "us-west-2"
+}
