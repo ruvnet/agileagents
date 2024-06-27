@@ -1,7 +1,12 @@
+
 import os
 import sys
 import time
 import re
+import json
+import logging
+import lzstring
+import httpx
 
 import threading
 import subprocess
@@ -10,18 +15,27 @@ from pydantic import BaseModel
 from jupyter_client import KernelManager
 from io import StringIO
 from litellm import completion
-import json
-import logging
-import lzstring
+
 from urllib.parse import quote
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import httpx
+from fastapi.responses import RedirectResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
 app = FastAPI()
 
+class RedirectToDocsMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path == "/":
+            return RedirectResponse(url="/docs")
+        response = await call_next(request)
+        return response
+
 class CodeRequest(BaseModel):
     code: str
+
+class PromptRequest(BaseModel):
+    prompt: str
 
 class SessionRegistry:
     def __init__(self):
@@ -205,9 +219,6 @@ async def gradio_ui(request: CodeRequest):
         return {"output": "Timeout waiting for session start.", "url": "", "session_id": session_id}
 
  
-class PromptRequest(BaseModel):
-    prompt: str
-
 @app.post("/generate_ui/")
 async def generate_ui(request: PromptRequest):
     try:
@@ -226,31 +237,14 @@ async def generate_ui(request: PromptRequest):
             messages=[
                 {"role": "system", "content": gradio_requirements},
                 {"role": "user", "content": request.prompt}
-            ],
-            functions=[
-                {
-                    "name": "generate_code_files",
-                    "description": "Generates Gradio UI code files",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "code": {
-                                "type": "string"
-                            }
-                        },
-                        "required": ["code"]
-                    }
-                }
-            ],
-            function_call="auto"
+            ]
         )
 
         # Log the full raw response from OpenAI for debugging
         print(f"Raw response from OpenAI: {response}")
 
-        if response.choices[0].finish_reason == 'function_call':
-            function_response = response.choices[0].message.function_call.arguments
-            gradio_code = json.loads(function_response).get("code", "")
+        if response.choices[0].message.content:
+            gradio_code = response.choices[0].message.content.strip("```python\n").strip("```")
             gradio_code += "\n\ndemo.launch(share=True)"
 
             # Log the generated Gradio code for debugging
@@ -264,12 +258,12 @@ async def generate_ui(request: PromptRequest):
             async with httpx.AsyncClient() as client:
                 gradio_ui_response = await client.post("http://0.0.0.0:8000/gradio_ui/", json=gradio_request_data)
                 gradio_ui_response_data = gradio_ui_response.json()
-                
+
                 # Log the response from the /gradio_ui endpoint for debugging
                 print(f"Response from /gradio_ui endpoint: {gradio_ui_response_data}")
-                
+
                 return {
-                    "openai_response": response,
+                    "openai_response": response.dict(),
                     "gradio_ui_response": gradio_ui_response_data,
                     "generated_code": gradio_code,
                     "posted_data": gradio_request_data  # Log the data that was posted
@@ -278,13 +272,15 @@ async def generate_ui(request: PromptRequest):
             error_message = "Failed to generate Gradio code from OpenAI response."
             print(error_message)
             return {
-                "openai_response": response,
+                "openai_response": response.dict(),
                 "error": error_message
             }
     except Exception as e:
         error_message = f"Unexpected error: {str(e)}"
         print(error_message)
         raise HTTPException(status_code=500, detail=error_message)
+
+
 
 if __name__ == "__main__":
     # Specify the port you want to check and free
